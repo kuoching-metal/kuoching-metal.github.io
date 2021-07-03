@@ -2,43 +2,72 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>KuoChing-Metal Inc,. Ltd.</title>
-    <script src="html5-qrcode.min.js"></script>
-   </head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>QR Code Scanner</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      html,
+      body {
+        padding: 0;
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      .wrapper {
+        padding: 0 4rem;
+      }
+      #canvas {
+        position: absolute;
+      }
+      #scanned {
+        display: flex;
+        flex-direction: column;
+        gap:1rem;
+      }
+      #video-wrapper {
+        height: 480px;
+        position: relative;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+    </style>
+  </head>
   <body>
-    <div id="qr-reader" style="width:500px"></div>
-    <div id="qr-reader-results"></div>
-    <script>
-      var resultContainer = document.getElementById('qr-reader-results');
-    var lastResult, countResults = 0;
-    
-    function onScanSuccess(decodedText, decodedResult) {
-        if (decodedText !== lastResult) {
-            ++countResults;
-            lastResult = decodedText;
-            // Handle on success condition with the decoded message.
-            console.log(`Scan result ${decodedText}`, decodedResult);
+    <template id="scaned-item">
+      <style>
+        .wrapper {
+          --gradient-start: #c471ed;
+          --gradient-end: #f7797d;
+          border: none;
+          border-radius: 1rem;
+          padding: 1rem;
+          background: linear-gradient(var(--gradient-start), var(--gradient-end));
+          box-shadow: 0 3px -3px 10px #000;
         }
-    }
-    
-    // This method will trigger user permissions 
-    Html5Qrcode.getCameras().then(cameras => {
-      /**
-        * devices would be an array of objects of type:
-        * { id: "id", label: "label" }
-       */
-       if (devices && devices.length) {
-           var cameraId = devices[0].id;
-            // .. use this to start scanning.
+        .wrapper span {
+          font-family: Arial, Helvetica, sans-serif;
+          color: white;
+          display: block;
         }
-   }).catch(err => {
-        // handle err   
-});
+      </style>
+      <div class="wrapper">
+        <span>Value: <slot name="raw"></slot></span>
+        <span>Format: <slot name="format"></slot></span>
+      </div>
+    </template>
 
-    var html5QrcodeScanner = new Html5QrcodeScanner(
-      cameraId,
-        "qr-reader", { fps: 10, qrbox: 250 });
-    html5QrcodeScanner.render(onScanSuccess);
-        </script>
+    <div class="wrapper">
+      <h1>QR Code Scanner</h1>
+      <div style="display: flex; gap: 1rem">
+        <div id="video-wrapper">
+          <canvas id="canvas" width="640" height="480"></canvas>
+          <video id="video" width="640" height="480" autoplay></video>
+        </div>
+        <div>
+          <h1>Recently Scanned</h1>
+          <div id="scanned"></div>
+        </div>
+      </div>
+    </div>
+    <script src="./main.js" async></script>
   </body>
 </html>
