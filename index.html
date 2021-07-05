@@ -28,7 +28,7 @@ const qrCodeSuccessCallback = (decodedText, decodedResult) => {
         lastResult = decodedText;
         // Handle on success condition with the decoded message.
         console.log(`Scan result ${decodedText}`, decodedResult);
-        resultContainer.text = decodedResult;
+        resultContainer.innerHTML = decodedResult;
 };
 const config = { fps: 10, qrbox: 250 };
 // If you want to prefer back camera
