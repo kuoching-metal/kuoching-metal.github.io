@@ -2,7 +2,7 @@
 <head>
     <title>Html-Qrcode Demo</title>
 <body>
-    <div id="reader" style="width:90%"></div>
+    <div id="reader" style="width:500px"></div>
     <div id="qr-reader-results"></div>
 </body>
 <script src="/html5-qrcode.min.js"></script>
@@ -30,7 +30,7 @@ const qrCodeSuccessCallback = (decodedText, decodedResult) => {
         console.log(`Scan result ${decodedText}`, decodedResult);
         resultContainer.text = decodedResult;
 };
-const config = { fps: 10, qrbox: 250 };
+const config = { fps: 10, qrbox: 600 };
 // If you want to prefer back camera
 html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback);
     });
