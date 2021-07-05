@@ -30,7 +30,7 @@ const qrCodeSuccessCallback = (decodedText, decodedResult) => {
         console.log(`Scan result ${decodedText}`, decodedResult);
         resultContainer.text = decodedResult;
 };
-const config = { fps: 10, qrbox: 600 };
+const config = { fps: 10, qrbox: 250 };
 // If you want to prefer back camera
 html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback);
     });
