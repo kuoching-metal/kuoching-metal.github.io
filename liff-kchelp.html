@@ -1,0 +1,55 @@
+<html>
+
+<head>
+    <title>國靖幫幫忙</title>
+    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/versions/2.22.3/sdk.js"></script>
+</head>
+
+<body>
+    <div id="loading">載入中...</div>
+    <script>
+        liff.init({
+            liffId: "2006735084-1kOjvl89" // LIFF ID
+        }).then(() => {
+
+            if (!liff.isLoggedIn()) {
+                liff.login();
+            } else {
+
+                liff.getProfile().then(profile => {
+
+                    (function (lt) {
+
+                        const urlObj = new URL(lt);
+
+                        // 取得 URL 參數
+                        const params = urlObj.searchParams;
+
+                        // 取得USERID跟DISPLAYNAME參數的值
+                        const ragicPath = params.get('ragicpath');
+                        const userId = params.get('userid');
+                        const displayName = params.get('displayname');
+
+                        let a = `https://ap7.ragic.com/kuochingmetal/${ragicPath}?webview&webaction=form&ver=new&version=2`;
+                        userId && (a += `&pfv${userId}=${encodeURIComponent(profile.userId)}`);
+                        displayName && (a += `&pfv${displayName}=${encodeURIComponent(profile.displayName)}`);
+
+                        //alert(a);
+
+                        lt.replace(a);
+                    })(window.location);
+
+                }).catch((err) => {
+                    console.error('取得使用者資訊失敗:', err);
+                    alert('取得使用者資訊失敗，請稍後再試。');
+                });
+            }
+
+        }).catch((err) => {
+            console.error('LIFF 初始化失敗:', err);
+            alert('LIFF 初始化失敗，請確認 LIFF ID 是否正確。');
+        });
+    </script>
+</body>
+
+</html>
