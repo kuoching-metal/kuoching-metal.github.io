@@ -30,7 +30,7 @@
                         const userId = params.get('userid');
                         const displayName = params.get('displayname');
 
-                        let a = `https://ap7.ragic.com/kuochingmetal/${ragicPath}?webview&webaction=form&ver=new&version=2`;
+                        let a = `https://ap7.ragic.com/kuochingmetal/${ragicPath}?ragic-web-embed=true&webaction=form&ver=new&version=2&showSheetName`;
                         userId && (a += `&pfv${userId}=${encodeURIComponent(profile.userId)}`);
                         displayName && (a += `&pfv${displayName}=${encodeURIComponent(profile.displayName)}`);
 
