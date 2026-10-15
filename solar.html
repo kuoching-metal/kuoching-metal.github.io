@@ -1,0 +1,441 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <title>太陽能發電監控儀表板</title>
+
+  <!-- Chart.js 4.4.8 -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px;
+      background: #f2f5f9;
+      color: #263b53;
+      font-family:
+        "Microsoft JhengHei",
+        "Noto Sans TC",
+        Arial,
+        sans-serif;
+    }
+
+    .container {
+      max-width: 1500px;
+      margin: 0 auto;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .header h1 {
+      margin: 0 0 6px;
+      font-size: 26px;
+      font-weight: 700;
+      color: #183b61;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: #78879a;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .controls label {
+      font-size: 14px;
+      color: #60758c;
+    }
+
+    input[type="date"] {
+      padding: 10px 12px;
+      border: 1px solid #d8e1eb;
+      border-radius: 8px;
+      background: white;
+      color: #263b53;
+      font-size: 14px;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .kpi-card {
+      background: white;
+      border-radius: 14px;
+      padding: 22px;
+      box-shadow: 0 1px 3px rgba(20, 45, 70, 0.03);
+      min-width: 0;
+    }
+
+    .kpi-label {
+      font-size: 14px;
+      color: #70839a;
+      margin-bottom: 14px;
+    }
+
+    .kpi-value {
+      font-size: 30px;
+      font-weight: 700;
+      color: #1c5f9d;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .kpi-unit {
+      font-size: 14px;
+      font-weight: 400;
+      color: #8291a1;
+      margin-left: 4px;
+    }
+
+    .kpi-note {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #96a2b1;
+    }
+
+    .panel {
+      background: white;
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 18px;
+      min-width: 0;
+      box-shadow: 0 1px 3px rgba(20, 45, 70, 0.03);
+    }
+
+    .panel h2 {
+      margin: 0 0 18px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #23486d;
+    }
+
+    .panel-note {
+      margin: -10px 0 16px;
+      font-size: 12px;
+      color: #8998a9;
+    }
+
+    .chart-container {
+      position: relative;
+      width: 100%;
+      height: 330px;
+    }
+
+    .chart-container.large {
+      height: 380px;
+    }
+
+    .chart-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    thead {
+      background: #f5f8fb;
+    }
+
+    th {
+      color: #60758c;
+      font-weight: 600;
+      text-align: left;
+      padding: 14px;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 15px 14px;
+      border-bottom: 1px solid #edf1f5;
+      color: #344d66;
+      white-space: nowrap;
+    }
+
+    tbody tr:hover {
+      background: #f8fbfe;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    td:not(:first-child),
+    th:not(:first-child) {
+      text-align: right;
+    }
+
+    .status {
+      margin-top: 8px;
+      padding: 16px 18px;
+      border-radius: 10px;
+      background: #eaf0f6;
+      color: #60758c;
+      font-size: 12px;
+      line-height: 1.9;
+      overflow-wrap: anywhere;
+    }
+
+    .footer {
+      text-align: center;
+      color: #9aa7b6;
+      font-size: 12px;
+      padding: 18px 0;
+    }
+
+    @media (max-width: 1000px) {
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .chart-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 12px;
+      }
+
+      .header h1 {
+        font-size: 21px;
+      }
+
+      .kpi-grid {
+        gap: 10px;
+      }
+
+      .kpi-card {
+        padding: 16px;
+      }
+
+      .kpi-value {
+        font-size: 24px;
+      }
+
+      .panel {
+        padding: 16px;
+      }
+
+      .chart-container {
+        height: 290px;
+      }
+
+      .chart-container.large {
+        height: 320px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <!-- 頁首 -->
+    <header class="header">
+      <div>
+        <h1>☀ 太陽能發電監控儀表板</h1>
+        <div class="subtitle">
+          五台逆變器即時監控與發電統計
+        </div>
+      </div>
+
+      <div class="controls">
+        <label for="dateFilter">查詢日期</label>
+        <input
+          type="date"
+          id="dateFilter"
+        >
+      </div>
+    </header>
+
+    <!-- 四個統計指標 -->
+    <section class="kpi-grid">
+
+      <div class="kpi-card">
+        <div class="kpi-label">
+          最新交流輸出功率
+        </div>
+
+        <div class="kpi-value">
+          <span id="power">--</span>
+          <span class="kpi-unit">kW</span>
+        </div>
+
+        <div class="kpi-note">
+          五台逆變器最新紀錄合計
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">
+          已記錄區間發電量
+        </div>
+
+        <div class="kpi-value">
+          <span id="daily">--</span>
+          <span class="kpi-unit">kWh</span>
+        </div>
+
+        <div class="kpi-note">
+          依累積電量差計算，包含缺漏估算
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">
+          累積發電量
+        </div>
+
+        <div class="kpi-value">
+          <span id="total">--</span>
+          <span class="kpi-unit">kWh</span>
+        </div>
+
+        <div class="kpi-note">
+          五台逆變器最新累積值
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">
+          最新轉換效率
+        </div>
+
+        <div class="kpi-value">
+          <span id="efficiency">--</span>
+          <span class="kpi-unit">%</span>
+        </div>
+
+        <div class="kpi-note">
+          交流輸出功率 ÷ 直流輸入功率
+        </div>
+      </div>
+
+    </section>
+
+    <!-- 每小時發電量 -->
+    <section class="panel">
+      <h2>每小時發電量（kWh）</h2>
+
+      <div class="panel-note">
+        橘色：正常紀錄區間｜
+        灰色：缺漏區間估算｜
+        無資料時段不補零
+      </div>
+
+      <div class="chart-container large">
+        <canvas id="dailyChart"></canvas>
+      </div>
+    </section>
+
+    <!-- 溫度與效率 -->
+    <section class="chart-grid">
+
+      <div class="panel">
+        <h2>各逆變器溫度趨勢（°C）</h2>
+
+        <div class="panel-note">
+          五台逆變器溫度變化
+        </div>
+
+        <div class="chart-container">
+          <canvas id="deviceChart"></canvas>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>各逆變器轉換效率趨勢（%）</h2>
+
+        <div class="panel-note">
+          AC ÷ DC × 100%，低功率紀錄排除
+        </div>
+
+        <div class="chart-container">
+          <canvas id="dcChart"></canvas>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- 最新設備紀錄 -->
+    <section class="panel">
+      <h2>各逆變器最新紀錄</h2>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>設備編號</th>
+              <th>紀錄時間</th>
+              <th>交流功率（W）</th>
+              <th>溫度（°C）</th>
+              <th>轉換效率（%）</th>
+            </tr>
+          </thead>
+
+          <tbody id="deviceTable">
+            <tr>
+              <td colspan="5" style="text-align:center">
+                資料載入中...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 同步狀態 -->
+    <div
+      id="status"
+      class="status"
+    >
+      正在連線至 Ragic，請稍候...
+    </div>
+
+    <div class="footer">
+      國靖金屬｜太陽能發電監控系統
+    </div>
+
+  </div>
+
+  <!-- 正式版 JavaScript -->
+  <script src="script.js"></script>
+
+</body>
+</html>
